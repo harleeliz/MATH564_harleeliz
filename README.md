@@ -12,7 +12,7 @@ All coursework is based on the following open-access textbook:
 
 ---
 
-## 📂 Repository Contents
+## Repository Contents
 
 | Folder/Path | Description                                                |
 |-------------|------------------------------------------------------------|
