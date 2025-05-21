@@ -1,0 +1,206 @@
+---
+title: "Homowork 10-HarleeRamos"
+author: "Harlee Ramos"
+date: "2024-11-27"
+output: html_document
+---
+
+<b style="color: green;">Question 2. The dataset LogisticData.csv includes 200 individuals, each described by the following variables:</b><br>
+
+* **Age:** Age of the individual (in years)
+
+* **Income:** Annual income of the individual (in dollars)
+
+* **Education:** Education level of the individual, categorized as:
+
+    * HighSchool
+    
+    * College
+    
+    * Graduate
+    
+* **Purchase:** Binary response variable indicating whether the individual made a purchase:
+
+    * 1 = Yes
+    
+    * 0 = No
+    
+<br>
+The goal is to build a logistic regression model to predict the probability of purchase (Purchase) based on the predictors.
+<br>
+(a) Load the dataset into R and inspect how the reference level for Education is set using the code below.<br>
+```{r}
+# Load the dataset
+data <- read.csv("LogisticData.csv")
+
+# Checking how the default reference level is set
+data$Education <- factor(data$Education)
+levels(data$Education)
+
+# Set 'HighSchool' as the reference level
+data$Education <- relevel(data$Education, ref = "HighSchool")
+levels(data$Education)
+```
+As shown in the output, “College” is currently set as the default reference level.
+Follow the instructions in the code below to set ’HighSchool’ as the new reference level.
+<br>
+That is, there are two indicator (dummy) variables such as:<br>
+Education_College =
+{
+1, if the person has a terminal bachelor's degree
+0, otherwise
+}
+<br>
+Education_Graduate =
+{
+1, if the person has a terminal graduate degree
+0, otherwise
+}
+<br>
+
+
+(b) Fit a logistic regression model using Age, Income, and Education as predictors for Purchase. Write the estimated model equation.
+```{r cars}
+# Fit the logistic regression model
+model1 <- glm(Purchase ~ Age + Income + Education, data = data, family = binomial)
+
+# View the summary of the model
+summary(model1)
+```
+
+
+(c) From the Summary, interpret the coefficients of the logistic regression model. Specifically: <br>
+
+(i) How do the log-odds of purchasing change with each additional year of age?<br>
+The coefficient for Age is 0.06727. This means that for every additional year of age, the log-odds of purchasing increase by 0.06727, assuming all other variables remain constant.
+
+
+(ii) How do the log-odds of purchasing change with every additional dollar in crease in income? <br>
+The coefficient for Income is 0.00002744. This means that for every additional dollar of income, the log-odds of purchasing increase by 0.00002744, assuming all other variables remain constant.
+
+(iii) Similar to (i) and (ii) above, how would you interpret the coefficients for the Education levels?<br>
+The reference category for Education is HighSchool, as indicated by the releveling. The coefficients for College and Graduate represent the change in log-odds compared to HighSchool.<br>
+	<br>
+	•	EducationCollege (0.2579):
+Individuals with a college education have 0.2579 higher log-odds of purchasing compared to those with a high school education, assuming other variables remain constant.<br>
+	<br>
+	•	EducationGraduate (1.264):
+Individuals with a graduate degree have 1.264 higher log-odds of purchasing compared to those with a high school education, assuming other variables remain constant.
+<br>
+
+(d) Use the model to predict the probability of purchase for an individual with:<br>
+Age = 30,
+Income = $50,000,
+Education = College.
+<br>
+The following code may be helpful.
+
+```{r}
+# Predict the probability for an individual with Age = 30, Income = 50000, Education = College
+new_data <- data.frame(Age = 30, Income = 50000, Education = factor("College", levels = c("HighSchool", "College", "Graduate")))
+predicted_prob <- predict(model1, new_data, type = "response")
+predicted_prob
+```
+<br>
+(e) Evaluate the model’s performance by creating a confusion matrix. What is the accuracy of the prediction?<br>
+The following code may be helpful.<br>
+
+The model has high accuracy (89%), but its performance is skewed toward correctly predicting non-purchases (specificity) while being poor at identifying actual purchases (low sensitivity). 
+
+```{r}
+# Load required library
+library(caret)
+
+# Generate predictions (threshold = 0.5 for classification)
+predictions <- ifelse(predict(model1, type = "response") > 0.5, 1, 0)
+
+# Create confusion matrix
+conf_matrix <- confusionMatrix(as.factor(predictions), as.factor(data$Purchase))
+conf_matrix
+```
+
+
+
+<b style="color: green;">Question 3. This question need the data file PoissonData.csv. Please see the context of the data below:</b><br>
+Context of the Data A community health organization is studying the number of emergency room (ER) visits for individuals in a city. The dataset includes the following variables:
+<br>
+* **ER Visits:** Number of ER visits in a year (response variable, count data).
+<br>
+* **Age:** Age of the individual (in years).
+<br>
+* **Income:** Annual income of the individual (in $1,000s).
+<br>
+* **Insurance:** Binary variable indicating whether the individual has health insurance (1 = Yes, 0 = No).
+<br>
+
+(a) Plot histograms for the ER Visits variable. What do you observe about its
+distribution? The following code may be helpful.<br>
+```{r}
+# Load the dataset
+data <- read.csv("PoissonData.csv")
+hist(data$ER_Visits, main="Histogram of ER Visits",
+     xlab="Number of ER Visits",col="skyblue",border="black")
+```
+
+
+
+
+(b) Fit a Poisson regression model with ER Visits as the response variable and Age, Income, and Insurance as predictors. Write out the equation of the fitted model.
+The following code may be helpful.
+
+```{r}
+# Fit a Poisson regression model
+model2 <- glm(ER_Visits ~ Age + Income + Insurance, 
+             family = poisson(link = "log"), 
+             data = data)
+
+# View model summary
+summary(model2)
+```
+
+
+(c) Interpret the coefficients for each predictor in the model. Specifically:<br>
+
+(i) How will the expected number of ER visits change with a one-year increase in age?<br>
+For every additional year of age, the log of the expected number of ER visits decreases by 0.0222, holding all other variables constant.
+To interpret this in terms of the expected number of ER visits, exponentiate the coefficient:<br>
+
+Expected ER Visits Ratio (per 1-year increase in Age) = e^(-0.0222) is approx. 0.978.<br>
+The expected number of ER visits decreases by about 2.2% for every additional year of age.<br>
+
+(ii) How will the expected number of ER visits change with a $1,000 increase in income?<br>
+For every $1,000 increase in income, the log of the expected number of ER visits increases by 0.0322, holding all other variables constant.<br>
+Exponentiating the coefficient:<br>
+
+Expected ER Visits Ratio (per $1,000 increase in Income) = e^(0.0322) is approx. 1.033.<br>
+The expected number of ER visits increases by about 3.3% for every $1,000 increase in income.<br>
+
+(iii) Based on the model, how does health insurance affect the expected number of ER visits?<br>
+Having health insurance (Insurance = 1) reduces the log of the expected number of ER visits by 0.6015, compared to not having insurance (Insurance = 0), holding all other variables constant.<br>
+Exponentiating the coefficient:<br>
+Expected ER Visits Ratio (with Insurance vs. without Insurance) = e^(-0.6015) is approx.0.548.<br>
+
+Then individuals with health insurance are expected to make about 54.8% as many ER visits as those without insurance, or in other words, having health insurance reduces expected ER visits by 45.2%.
+
+(d) Predict the expected number of ER visits for a 40-year-old individual with an annual income of $50,000 who has health insurance.<br>
+The following code may be helpful.<br>
+
+```{r}
+# Predict for a 40-year-old with $50,000 income and health insurance
+new_data <- data.frame(Age = 40, Income = 50, Insurance = 1)
+
+# Predict expected number of ER visits
+predicted_visits <- predict(model2, newdata = new_data, type = "response")
+
+# Print the prediction
+cat("Predicted number of ER visits:", predicted_visits, "\n")
+```
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,109 @@
+---
+title: "Homework9-HarleeRamos"
+author: "Harlee Ramos"
+date: "2024-11-15"
+output: html_document
+---
+
+
+## Question 2
+<b style="color: green;">a) Use the provided R code below to compute Cook’s Distance values for each data point.</b>
+
+```{r}
+# Load dataset
+data <- read.csv("HW9Data1.csv")
+
+# Fit a linear regression model
+model <- lm(y ~ x1 + x2 + x3, data = data)
+
+# Calculate Cook’s Distance
+cooksD <- cooks.distance(model)
+
+# Identify influential points
+threshold <- 4 / nrow(data)
+influential_points <- which(cooksD > threshold)
+
+# Output results
+print("Indices of influential points:")
+print(influential_points)
+print("Cook's Distance values for influential points:")
+print(cooksD[influential_points])
+```
+
+<b style="color: green;">b) According to standard criteria, a data point with a Cook’s Distance greater than 4/n (where n is the total number of observations) is considered influential. Use this threshold to identify influential points. Which data points are identified as influential based on Cook’s Distance?</b>
+
+The points 2, 18, 59, 94, 99, and 100 are flagged as influential. Points 99 and 100 have the strongest influence on the regression model because of their high Cook’s Distance values.”
+
+<b style="color: green;">c) Set up a second regression model with the influential points removed. Compute the RSE for the two models, what conclusion can you make?</b>
+
+```{r}
+# Load original dataset
+data <- read.csv("HW9Data1.csv")
+
+# Fit the original linear regression model
+model1 <- lm(y ~ x1 + x2 + x3, data = data)
+
+# Calculate Cook's Distance and identify influential points
+cooksD <- cooks.distance(model1)
+threshold <- 4 / nrow(data)
+influential_points <- which(cooksD > threshold)
+
+# Remove influential points from the dataset
+data_no_influential <- data[-influential_points, ]
+
+# Fit a second regression model without influential points
+model2 <- lm(y ~ x1 + x2 + x3, data = data_no_influential)
+
+# Compute the Residual Standard Error (RSE) for both models
+RSE_model1 <- summary(model1)$sigma
+RSE_model2 <- summary(model2)$sigma
+
+# Output the RSE for comparison
+print(paste("RSE for the original model:", RSE_model1))
+print(paste("RSE for the model without influential points:", RSE_model2))
+```
+
+After eliminating the influential points, the RSE for the model without these points (model2) is lower than the RSE for model1. This suggests that the influential points may have been outliers causing unnecessary variance/errors in the model1.
+
+## Question 3
+<b style="color: green;">(a) Load the dataset HW9Data2.csv in R and use the VIF (Variance Inflation Factor) method to identify which variables are highly collinear.</b>
+
+
+
+```{r}
+# Load necessary library
+library(car)
+
+# Load the dataset
+HW9Data2 <- read.csv("HW9Data2.csv")
+
+# Fit a linear model
+model <- lm(y ~ x1 + x2 + x3 + x4 + x5, data = HW9Data2)
+
+# Calculate VIF values
+vif_values <- vif(model)
+print("VIF values for each predictor:")
+print(vif_values)
+```
+
+<b style="color: green;">(b) Interpret the VIF values to determine which variables might be problematic.</b>
+
+Note: Below is the interpretation of the VIF values:
+
+<ul>
+  <li><strong>VIF = 1</strong>: There is no correlation between the predictor and the other variables, indicating no multicollinearity.</li>
+  <li><strong>1 &lt; VIF &lt; 5</strong>: Moderate correlation; multicollinearity is not a severe issue.</li>
+  <li><strong>VIF ≥ 5</strong>: High correlation, suggesting the presence of multicollinearity. The variable may be problematic, and its inclusion in the model could lead to inflated standard errors and unstable coefficient estimates.</li>
+  <li><strong>VIF ≥ 10</strong>: This typically indicates severe multicollinearity. In such cases, the predictor is highly correlated with one or more other variables, and it’s advisable to reconsider its inclusion or apply remedial measures.</li>
+</ul>
+<br>
+
+<p>Based on the results, we can infer the following:</p>
+
+<ul>
+  <li><strong>The VIF values for x1 and x2</strong> exceed the threshold of 10, indicating severe multicollinearity (VIF for x1: 89.842256; VIF for x2: 74.260782). These predictors could cause issues in the regression model, such as inflated standard errors, which make it more difficult to assess the significance of the coefficients.</li>
+
+  <li><strong>The VIF for x3</strong> is above the threshold of 5 (VIF for x3: 7.017174), indicating a high correlation and suggesting the presence of multicollinearity.</li>
+
+  <li><strong>The VIF values for x4 and x5</strong> fall within 1 &lt; VIF &lt; 5 (VIF for x4: 1.025445; VIF for x5: 1.024314), suggesting moderate correlation. Thus, multicollinearity is not a severe issue for these predictors, and they are not a matter of concern.</li>
+</ul>

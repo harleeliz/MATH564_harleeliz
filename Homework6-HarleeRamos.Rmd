@@ -1,0 +1,224 @@
+---
+title: "Homework N°6"
+author: "Harlee Ramos"
+date: "2024-10-11"
+output: html_document
+---
+
+
+
+
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formatted Text Example</title>
+    <style>
+        /* Style for section labels */
+        .section-label {
+            color: purple;
+            font-weight: bold;
+        }
+        
+        /* Remove default list styling for ordered list and customize */
+        ol.custom-counter {
+            list-style-type: lower-alpha; /* a., b., c., etc. */
+            padding-left: 10px;
+        }
+        
+        /* Style for bullet points */
+        ul.bullet-points {
+            list-style-type: disc; /* • */
+            margin-left: 1px;
+        }
+        
+        /* Optional: Style for subscript in mathematical expressions */
+        sub {
+            font-size: 0.8em;
+        }
+    </style>
+    
+    </head>
+    
+    
+## Question 1<br>
+This question should be answered using the Carseats data set as seen in Homework 4.   
+<span style="color: purple; font-weight: bold;">
+    a. Fit a multiple regression model to predict Sales using Price, Urban, and US
+</span><br>
+
+```{r}
+# Load the necessary library
+library("ISLR2")
+
+# Check the documentation for the 'Carseats' dataset
+?Carseats
+
+# Assign 'Sales' column from 'Carseats' dataset to the response variable y
+y <- Carseats$Sales
+
+# Create a binary variable 'x1' based on whether 'Urban' is 'Yes' or 'No'
+# If 'Urban' is 'Yes', set x1 to 1; otherwise, set it to 0
+x1 <- ifelse(Carseats$Urban == 'Yes', 1, 0)
+
+# Create a binary variable 'x2' based on whether 'US' is 'Yes' or 'No'
+# If 'US' is 'Yes', set x2 to 1; otherwise, set it to 0
+x2 <- ifelse(Carseats$US == 'Yes', 1, 0)
+
+# Assign the 'Price' column from 'Carseats' dataset to the predictor variable x3
+x3 <- Carseats$Price
+
+# Fit a linear regression model with 'y' as the response variable
+# and 'x1', 'x2', and 'x3' as the predictor variables
+model1 <- lm(y ~ x1 + x2 + x3)
+
+# Display a detailed summary of the model, including coefficients,
+# standard errors, and model statistics (R-squared, etc.)
+summary(model1)
+
+# Fit the reduced model excluding Urban
+model2 <- lm(Sales ~ Price + US, data = Carseats)
+
+# Summary of the reduced model
+summary(model2)
+```
+</head>
+<body>
+    <ol class="custom-counter" start="2">
+        <!-- Section b -->
+        <li>
+            <span class="section-label">From the summary, provide an interpretation of each coefficient in the model</span>
+            <ul class="bullet-points">
+                <li>
+                    <strong>The intercept (13.04)</strong> indicates the predicted value of sales when Price, Urban, and US are all set to zero. Because Urban and US are binary variables, the intercept represents the average sales for a retailer in a rural, non-US area with a base price of $0.
+                </li>
+                <li>
+                    <strong>Urban (x<sub>1</sub>)</strong>: For every one-unit rise in price, Urban is projected to decline by 0.022 units, while other predictors remain fixed. This shows that living in an urban location has no significant effect on sales.
+                </li>
+                <li>
+                    <strong>US (x<sub>2</sub>)</strong>: The coefficient for US is 1.201, meaning that, holding Price and Urban constant, stores located in the US tend to have 1.201 more sales units compared to non-US stores.
+                </li>
+                <li>
+                    <strong>Price (x<sub>3</sub>)</strong>: For every one-unit rise in price, Sales are projected to decline by 0.054 units, while other predictors remain fixed.
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Section c -->
+        <li>
+            <span class="section-label">For which of the predictors can you reject the null hypothesis H<sub>0</sub>: β<sub>j</sub> = 0</span>
+            <ul class="bullet-points">
+                <li>
+                    <strong>Urban (x<sub>1</sub>)</strong>: The p-value is 0.936, so we cannot reject H<sub>0</sub>: β<sub>j</sub> = 0. This means that Urban is not a significant predictor.
+                </li>
+                <li>
+                    <strong>US (x<sub>2</sub>)</strong>: The p-value is 4.86e-06, which allows us to reject H<sub>0</sub>: β<sub>j</sub> = 0. US is also a significant predictor.
+                </li>
+                <li>
+                    <strong>Price (x<sub>3</sub>)</strong>: The p-value is extremely small (&lt; 2e-16), indicating strong evidence to reject H<sub>0</sub>: β<sub>j</sub> = 0. Price is a significant predictor.
+                </li>
+            </ul>
+        </li>
+        
+        <!-- Section d -->
+        <li>
+            <span class="section-label">On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.</span>
+            <p>
+                This smaller model will only use the significant predictors (Price and US). You should expect an improvement in model simplicity while maintaining similar predictive power.
+            </p>
+        </li>
+        
+        <!-- Section e -->
+        <li>
+            <span class="section-label">How well do the models in (a) and (d) fit the data?</span>
+            <ul class="bullet-points">
+                <li>
+                    <strong>Model 1</strong>: <code>lm(y = x1 + x2 + x3)</code><br>
+                    In this model, Sales is predicted using Price, Urban, and US, implying that the predictors Price, Urban, and US explain 23.35% of the variation. However, Urban was determined to be statistically insignificant with a p-value of 0.936, implying that it does not make a meaningful contribution to explaining sales. The model's low Adjusted R-squared indicates weak statistical significance.
+                </li>
+                <li>
+                    <strong>Model 2</strong>: <code>lm(Sales ~ Price + US, data = Carseats)</code><br>
+                    In this model, Urban is removed due to its insignificance, and sales are predicted using simply Price and US. The adjusted R-squared (0.2354 vs. 0.2335) shows that deleting the non-significant predictor (Urban) resulted in a more efficient model. The residual standard error is also slightly smaller, indicating that the simplified model fits the data just as well, if not better, with fewer predictors. The F-statistic has risen to 62.43 (from 41.52), demonstrating that the simplified model is more efficient and simpler while maintaining statistical significance.
+                </li>
+            </ul>
+        </li>
+    </ol>
+</body>
+</html>
+
+
+## Question 2<br>
+In this problem, we are going to explore the Swiss data set. See the information below:
+```{r}
+ # Load the dplyr library for data manipulation
+library(dplyr)
+
+# Add a new binary column 'CatholicBin' to the 'swiss' dataset
+swiss <- mutate(swiss, CatholicBin = 1 * (Catholic > 50))
+
+# Display the first few rows of the updated 'swiss' dataset
+head(swiss)
+
+# Assign 'Agriculture' and 'Fertility' directly from the dataset for plotting
+x1 <- swiss$Agriculture
+y <- swiss$Fertility
+
+# Plot 'Agriculture' against 'Fertility'
+plot(x1, y)
+
+model1<-lm(y~x1+factor(CatholicBin),data=swiss)
+summary(model1)$coef
+```
+
+<span style="color: purple; font-weight: bold;">
+    a. What can you conclude from this regression analysis?
+</span><br>
+Intercept interpretation: When both Agriculture and CatholicBin are at their baseline levels (CatholicBin = 0, Agriculture = 0, the average Fertility rate is 60.83.<br>
+
+A coefficient of 0.124 for Agriculture indicates that for every 1% rise in the number of males working in agriculture, Fertility increases by around 0.12 units, assuming a CatholicBin remains constant. However, the p-value for agriculture is 0.133, which is greater than 0.05. This suggests that the relationship between agriculture and fertility is not statistically significant, and we cannot infer with certainty that agriculture has a significant impact on fertility based on this model.<br>
+
+The coefficient for CatholicBin is 7.88, indicating that regions with a majority Catholic population (CatholicBin = 1) have a fertility rate that is 7.88 units higher than non-Catholic provinces, while Agriculture remains constant. The p-value for CatholicBin is 0.041 < 0.05, indicating a significant difference in fertility rates between Catholic and non-Catholic regions. This suggests that religion, as demonstrated by the mainly Catholic population, has a significant impact on fertility rates.<br>
+
+
+## Question 4
+Tool wear is the gradual failure of cutting tools due to regular operation. Let us consider a regression model of tool wear y, on tool speed, x1, and tool models A, B, C and D.
+```{r}
+# Load the CSV data
+Catdata <- read.csv("Cat1.csv", header = TRUE, sep = ",")
+
+# Plot x1 against y
+plot(Catdata$x1, Catdata$y)
+
+# Create indicator variables for 'group'
+x2 <- ifelse(Catdata$group == 'A', 1, 0)  # Indicator for group A
+x3 <- ifelse(Catdata$group == 'B', 1, 0)  # Indicator for group B
+# No need for x4 since R will automatically treat group 'C' as the baseline
+
+# Create a new data frame
+df_new <- data.frame(toolwear = Catdata$y, speed = Catdata$x1, x2, x3)
+
+# Fit the linear model
+model1 <- lm(toolwear ~ speed + factor(x2) + factor(x3), data = df_new)
+
+# Display the model summary and coefficients
+summary(model1)
+# Extract the coefficients table
+coeff_table <- summary(model1)$coefficients
+
+```
+
+<span style="color: purple; font-weight: bold;">
+    a. What can you conclude from this regression analysis?
+</span><br>
+
+The speed coefficient is 3.861, which means that for every one unit increase in speed, tool wear increases by approximately 3.86 units, but the tool group remains constant. The p-value for tool speed is 0.072>0.05. This suggests a possitive relationship between speed and tool wear. <br>
+
+• The coefficient for group A is 1.968, indicating that tool wear is roughly 1.97 units higher for tools in group A compared to tools in group C, with speed fixed. The p-value for group A is 0.168>0.05, indicating that the difference is not significant. <br>
+
+• The coefficient for group B is 1.309, showing that tool wear is 1.31 units higher for tools in group B than for tools in group C, with speed fixed. The p-value for group B is 0.358>0.05, which is not significant. <br>
+
+• The R-squared value of 0.07055 implies that the model can only explain around 7.05% of the variability in tool wear. This shows that the model fails to reflect for most of the variation in tool wear. <br>
+
+• The adjusted R-squared is 0.03387, which is significantly lower, demonstrates that the model is not well suited to the data. <br>
+
+• The overall F-statistic is 1.923, with a p-value of 0.133, indicating that the model is not statistically significant in general. <br>

@@ -1,0 +1,59 @@
+---
+title: "Homework 5"
+author: "Harlee Ramos"
+date: "2024-10-04"
+output: html_document
+---
+
+---
+
+## Question 4
+Upload the Advertising dataset into R using your R Markdown file, then set up the following regression model:
+```{r}
+# Load the dataset
+df <- read.csv("Advertising.csv", header=TRUE, sep=",")
+
+# Extract variables
+x1 <- df$TV
+x2 <- df$radio
+x3 <- df$newspaper
+y <- df$sales
+
+# Build the linear regression model
+model1 <- lm(sales~ TV+radio, data=df)
+options(digits = 9)
+summary(model1)
+
+
+# Create a new data frame for prediction
+new_data <- data.frame(TV=100, radio=20)
+
+# Generate the confidence interval prediction
+prediction <- predict(model1, newdata=new_data, interval="confidence", level=0.95)
+
+# Generate the prediction interval
+prediction_interval <- predict(model1, newdata=new_data, interval="prediction", level=0.95)
+
+# Display the results
+print(prediction) # for confidence interval
+print(prediction_interval) # for prediction interval
+```
+The R-code above will be useful. Note that because the Advertising data has sales in thousand of units and advertising budget in thousand of dollars, we set “TV =100” and “radio=20” in the R-code.
+
+**Sub-Questions 4:**<br>
+Using this model, answer the following questions:<br>
+<span style="color: blue;">
+(a) What is the average sales when $100,000 is spent on TV advertising and $20,000 on radio advertising? </span> <br>
+The average sales for $100,000 on TV and $20,000 on radio is approximately 11.26 thousand units.<br>
+
+<span style="color: blue;">
+(b) What is the predicted sales for a specific market when $100,000 is spent on TV advertising and $20,000 on radio advertising?</span> <br>
+The predicted sales for a specific market with the same budget is also 11.26 thousand units.<br>
+
+<span style="color: blue;">
+(c) Construct a 95% confidence interval for estimating the average sales under the same advertising expenditures as in (a) and (b). </span><br>
+The 95% confidence interval for the average sales is [10.99, 11.53] thousand units.<br>
+
+<span style="color: blue;">
+(d) Construct a 95% prediction interval for predicting the sales of a specific market under the same advertising expenditures as in (a) and (b). </span><br>
+The 95% prediction interval for the sales in a specific market is [7.93, 14.58] thousand units.<br>

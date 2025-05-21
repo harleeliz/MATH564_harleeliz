@@ -1,0 +1,191 @@
+---
+title: "Homework 4"
+author: "Harlee Ramos"
+date: "2024-09-27"
+output: html_document
+---
+
+## Question 1
+Summary from the regression model 
+```{r}
+library("tidyverse")
+
+?mtcars
+my_data1<-mtcars %>%
+  select(mpg,cyl,disp,hp,wt)
+model1<-lm(mpg~cyl+disp+hp+wt,data=my_data1)
+summary(model1)
+```
+
+**Sub-Questions 1:**<br>
+
+<span style="color: blue;">
+(a) If we choose to regress mpg using only three predictors instead of the four from
+model 1 (cyl, disp, hp, and wt), which variable would you remove from the analysis,
+and why?</span>
+
+A. In order to make the decision of which variable to remove, we have to look at the columns.<br>
+
+Taking the Pr(>|t|) column of the p-value of each one of the predictors/features, we have:<br>
+
+cyl: 0.058947 > 0.05; it is above the reference value 0.05, which means that is not very significant.,<br>
+
+disp: 0.331386 > 0.1; it is above the reference value 0.1, which means that is not significant.<br>
+
+hp:  0.102379 > 0.1; it is above the reference value 0.1, which means that is not significant.<br>
+
+wt: 0.000759 < 0.00; it is below the threshold, and R marked the value with the 3-stars, this indicates wt has a very strong and statistically significant relationship with mpg.<br>
+
+Based on all of those values, the variable to remove is disp because it represents the highest p-value,which suggests that it is not statistically significant in the presence of the other predictors.<br>
+
+<span style="color: blue;">(b) Rerun the regression using the three variables from Part (a). Label this model as
+model2 and print the summary. Based on the result, if we have to drop one more
+predictor from the regression model, which predictor will that be? Why?</span><br>
+Conducting a similar analysis, we can contrast the key numbers p-value and correlation:
+cyl p-value: 0.098480 >0.1 sligly significant.<br>
+hp p-value: 0.140015>1 (not significant).<br>
+wt p-value: 0.000199 < 0 (significant).<br>
+
+By looking at all three p-values, we can drop out of the model the predictor hp because it represents the highest p-value amongst the others, which suggests that it is not statistically significant in the presence of the other predictors.<br>
+
+```{r}
+library("tidyverse")
+
+?mtcars
+my_data2<-mtcars %>%
+  select(mpg,cyl,hp,wt)
+model2<-lm(mpg~cyl+hp+wt,data=my_data2)
+summary(model2)
+```
+
+<span style="color: blue;">(c) Using your answer from (b), create a regression model named model3 with just
+two predictors. In this model, are all the p values for the predictors considered
+‘significant’? Print the summary of model3.</span>
+
+With this modification, we can certanly check that all of the predictors have a good significance level,for the cyl is significant with a p-value 0.001064 < 0.01 (2-stars), and wt is highly significant with a p-value 0.000222 < 0.001 (3-stars).  This indicates that both the cyl and the wt of the vehicle are strong predictors of miles per gallon (mpg) in the dataset.
+
+
+```{r}
+library("tidyverse")
+
+?mtcars
+my_data3<-mtcars %>%
+  select(mpg,cyl,wt)
+model3<-lm(mpg~cyl+wt,data=my_data3)
+summary(model3)
+cor(my_data3)
+```
+
+<span style="color: blue;">(d) Notice that even with only two predictors in (c), the R2 for model3 is still above
+0.8. Give one possible reasons why this is the case.<br>
+
+Now moving to the R squared value of  0.8302 it is between the threshold of  0.5 ≤ R^2 < 0.7, that indicates a strong relationship, considering also that this value is affected by the context/field in which we are giving our conclusions. <br>
+The two variables (cyl and wt) together explain a significant amount of the variation in mpg. Even while they are not completely independent (the correlation between cyl and wt is 0.782), they collectively represent a significant portion of the variation in mpg.<br>
+The R^2 value indicates that the strong individual correlations between cyl and wt may explain approximately 83% of the variance in mpg.<br>
+---
+
+## Question 2
+
+**Sub-Questions 2:**<br>
+<span style="color: green;">(a) Fit a multiple regression model to predict Sales using Advertising and Price.</span>
+
+```{r}
+library("ISLR2")
+
+?Carseats
+my_data1<-Carseats %>%
+  select(Sales,Advertising,Price)
+model1<-lm(Sales~Advertising+Price,data=my_data1)
+summary(model1)
+```
+<span style="color: green;">(b) Based on your answer in Part (2a), for which of the predictors can you reject the null hypothesis H0 : βj = 0?</span>
+<br>
+To reject the null hypothesis H0: βj = 0, the p-value must be less than the coeficient value for each predictor analyzed separately. Advertising has a p-value of 3.64e-11<0 and is indicated with three stars. With this result, we can reject the null hypothesis and infer that advertising has a significant effect on sales. Price has a p-value of <2e-16<0 and is rated with three stars. Using this value, we can reject the null hypothesis and show that price is a significant predictor of sales.
+<br>
+
+<span style="color: green;">(c) Would you predict the sales of car seats simply based on the two predictors Advertising and Price? Explain your answer.</span><br>
+According to the previous questions, both predictors are significant due to their p-values, but if we look at the multiple R-squared: 0.2819, this value represents that all of the predictors constitute 28.19% of the variability of sales, implying that 72% of the variability is not represented by the predictors. This means that simply because these two predictors are significant does not imply that they are sufficient to fully explain sales. Perhaps another combination of factors may result in a better model with a higher RSE for predicting sales.
+<br>
+
+---
+
+## Question 3
+A person’s muscle mass tends to decline with age. To investigate this trend in women, a nutritionist randomly selected 15 women from each decade, starting at age 40 and continuing through age 79.<br> The data is stored in a TXT file named MMass. In this file, the first column represents muscle mass, while the second column represents age. Use the following code to read the file, transform the variables, and create a plot of the data (x,y).<br>
+
+
+**Sub-Questions 3:**<br>
+<span style="color: red;">(a) Use the lm() function to compute the regression model. Then, add the regression line to the previous (x,y) plot.</span>
+
+<br>
+```{r}
+# Load the txt file and name it as data1
+data1 <- read.table("MMass.txt", header = FALSE)
+
+# Rename columns for clarity
+colnames(data1) <- c("MuscleMass", "Age")
+
+# Extract variables
+x <- data1$Age
+y <- data1$MuscleMass
+
+# Plotting data with enhancements
+plot(
+  x, y,
+  main = "Muscle Mass vs Age",
+  xlab = "Age (years)",
+  ylab = "Muscle Mass (kg)",
+  pch = 19,
+  col = "darkblue",
+  cex = 1.2,
+  las = 1,
+  bty = "l"
+)
+
+# Fit linear regression model
+model1 <- lm(y ~ x)
+
+# Display summary of the model
+summary(model1)
+
+# Add the regression line with styling
+abline(model1, col = "red", lwd = 2)
+
+# Add legend with model equation and R-squared
+eq <- paste0("y = ", round(coef(model1)[2], 2), "x + ", round(coef(model1)[1], 2))
+r2 <- paste0("R² = ", round(summary(model1)$r.squared, 3))
+legend(
+  "topright",
+  legend = c(eq, r2),
+  col = c("red"),
+  lty = 1,
+  lwd = 2,
+  bty = "n"
+)
+```
+
+<span style="color: red;">(b) Obtain a point estimate of the average change in the muscle mass for women differing in age by one year.</span>
+<br>
+The slope coefficient is -1.1900. This value means that, on average, muscle mass decreases by approximately 1.19 units for each additional year of age. This is the point estimate of the average change in muscle mass for a one-year increase in age.
+
+
+<span style="color: red;">(c) Obtain a point estimate of σ^2, where σ^2 is the constant variance of ϵ in the following model Muscle mass= β0 + β1Age+ ϵ.</span>
+<br>
+From the summary table the Residual standard error: 8.173 on 58 degrees of freedom.
+In oder to estimate the  variance of the residuals σ^2  , we have to calculate 
+
+σ^2 = (Residual Standard Error)^2 = 8.173^2 = 66.80
+Then the point estimate of σ^2 is approximately 66.80.
+
+<span style="color: red;">(d) Does the linear regression model seem to provide a good fit for the data? Does your plot support the expectation that muscle mass decreases with age? Use the
+information from the summary function to support your argument.</span>
+<br>
+We can infer the following. The R-squared value of 0.7501 means that approximately 75.01% of the variation in muscle mass can be explained by the age of the women. By looking at we can see the model is going down, this is due to the slope of -1.1900, this value indicates that for each additional year of age, the muscle mass decreases by 1.19 units on average.
+However, the linear regression model appears to provide a good fit for the data based on the R-squared value and significance of the coefficients of 0< 2.2e-16
+. It can be concluded that the plot supports the expectation that muscle mass decreases with age.
+
+
+
+
+
+
+

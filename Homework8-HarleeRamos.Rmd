@@ -1,0 +1,118 @@
+---
+title: "Homework8"
+author: "Harlee Ramos"
+date: "2024-10-25"
+output: html_document
+---
+
+## Question 3
+Using the simulated data from the file AR1-data1.csv, please follow the code below to conduct the Durbin-Watson test and create an ACF plot.
+```{r}
+# Load necessary libraries
+library(lmtest)    # For Durbin-Watson test
+library(forecast)  # For ACF plot
+library(car)       # For ACF residuals
+
+# Read the CSV file (assuming it has a header row)
+data <- read.csv("AR1-data1.csv")
+
+# Assuming the model is a linear regression with dependent variable y and independent variable x
+model <- lm(y ~ x1 + x2, data = data)
+
+# Durbin-Watson test for autocorrelation
+dw_test <- dwtest(model)
+print(dw_test)
+
+# Plot the ACF of residuals to visually inspect for autocorrelation
+residuals <- residuals(model)
+acf(residuals, main = "ACF of Residuals")
+```
+<br><span style="color: red;">What can you conclude from the Durbin-Watson test and the ACF plot above.</span>
+<br>
+The Durbin-Watson Test and ACF plot indicate strong positive autocorrelation in residuals, because:
+DW = 0.27472: A Durbin-Watson statistic value close to 0 indicates strong positive autocorrelation in the residuals.
+p-value < 2.2e-16: The p-value is extremely small.
+Both of this results allow us to reject the null hypothesis (no autocorrelation).
+The ACF plot shows significant autocorrelation at lag 1, indicating an AR(1) or AR(2) process where residuals are correlated with previous ones. Overall, these results confirm strong autocorrelation in residuals.
+
+
+
+## Question 4
+In this exercise, we would like to determine the type of autocorrelation seen in Problem 3. In particular, we would like to see whether the autocorrelation follows an AR(1) or an AR(2) process.
+```{r}
+# Best way to test for AR-1 or AR-2 processes
+# Fit AR models to residuals and compare using AIC
+ar1_model <- arima(residuals, order = c(1, 0, 0))  # AR(1) model
+ar2_model <- arima(residuals, order = c(2, 0, 0))  # AR(2) model
+
+# Compare AIC values
+cat("AR(1) AIC: ", ar1_model$aic, "\n")
+cat("AR(2) AIC: ", ar2_model$aic, "\n")
+
+# Select the model with the lowest AIC
+if (ar1_model$aic < ar2_model$aic) {
+  cat("AR(1) model is preferred based on AIC.\n")
+} else {
+  cat("AR(2) model is preferred based on AIC.\n")
+}
+```
+<br><span style="color: red;">Determine whether the the autocorrelation is best model by an AR(1) or an AR(2) process.</span>
+<br>
+The lower AIC value indicates that an AR(1) process best explains the autocorrelation in the residuals. This indicates that there is a one-time lag between the current residuals and the preceding residual. The two lags included in the AR(2) process do not improve the model fit to the data.
+
+## Question 5 - Continuation
+(b) Revise the code on Page 99 of our September notes, or use an alternative approach, to implement the change of variables from part (a). This will help you create a regression model that eliminates the autocorrelation issue.
+```{r}
+# Load necessary libraries
+library(lmtest)
+library(forecast)
+library(car)
+
+# Read the CSV file (assuming it has a header row)
+data <- read.csv("AR1-data1.csv")
+
+# Assume the model is a linear regression with dependent variable y and independent variables x1 and x2
+model <- lm(y ~ x1 + x2, data = data)
+
+# Durbin-Watson test for autocorrelation in the original model
+dw_test <- dwtest(model)
+print(dw_test)
+
+# Extract residuals from the original model
+residuals <- residuals(model)
+
+# Get first-order autocorrelation coefficient from ACF of residuals
+acf_data <- acf(residuals, plot = FALSE)
+phi <- acf_data$acf[2]  # Extract the lag-1 autocorrelation
+
+# Initialize transformed variables
+n <- nrow(data)
+y_prime <- rep(0, n-1)
+x1_prime <- rep(0, n-1)
+x2_prime <- rep(0, n-1)
+
+# Transform the data using the new variables
+for(i in 2:n) {
+  y_prime[i-1] <- data$y[i] - phi * data$y[i-1]
+  x1_prime[i-1] <- data$x1[i] - phi * data$x1[i-1]
+  x2_prime[i-1] <- data$x2[i] - phi * data$x2[i-1]
+}
+
+# Fit a new model to the transformed data
+transformed_model <- lm(y_prime ~ x1_prime + x2_prime)
+
+# Print the summary of the transformed model
+summary(transformed_model)
+```
+<br>
+(c) Perform the Durbin-Watson test and create an ACF plot for the new model, and show that the new model has no autocorrelation issue.
+```{r}
+# Durbin-Watson test for the new model to check autocorrelation
+dw_test_transformed <- dwtest(transformed_model)
+print(dw_test_transformed)
+
+# ACF plot for the residuals of the transformed model to visually inspect autocorrelation
+residuals_transformed <- residuals(transformed_model)
+acf(residuals_transformed, main = "ACF of Residuals (Transformed Model)")
+
+```

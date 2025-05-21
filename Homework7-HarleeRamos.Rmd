@@ -1,0 +1,156 @@
+---
+title: "Homework N°7"
+author: "Harlee Ramos"
+date: "2024-10-14"
+output: html_document
+---
+
+## Question 3
+Using the simulated data from the file HW7-data-1.csv, follow the code below to compute the residuals and fitted values. The code includes two manual plots: one showing the residuals on the regression line and another displaying the residuals versus the fitted values. <br>
+
+
+```{r}
+#Load necessary library
+
+library(ggplot2)
+
+#Read the data from CSV file
+data <- read.csv("Hw7-data-1.csv")
+
+#Fit a linear model
+model0 <- lm(y~x,data=data)
+
+#Calculate fitted values and residuals
+data$fitted <-fitted(model0)
+data$residuals <-resid(model0)
+
+#Print the fist fwe rows of the data frame with fitted values and residuals
+head(data)
+
+#Plot the regression line, observed values, and residuals
+ggplot(data,aes(x=x,y=y))+
+  geom_point(color="blue",alpha=0.6)+ #observed points
+  geom_smooth(method="lm",color="black",se=FALSE)+ #regression line
+  geom_segment(aes(x=x,xend=x,y=fitted,yend=y),
+               color="red",linetype="dashed",alpha=0.5)+#residuals as vertical lines
+  labs(title="Regression line with Residuals", x="X", y="Y")+ theme_minimal()
+
+#Plot residuals vs fitted values
+ggplot(data,aes(x=fitted,y=residuals))+
+  geom_point()+
+  geom_hline(yintercept=0,linetype="dashed",color="red")+ labs(title="Residuals vs Fitted values", x="Fitted values", y="Residuals")+theme_minimal()
+
+```
+<br><br>
+<b>What conclusions can you draw from the residual vs. fitted plot? Specifically, can you determine from the plot whether:</b> <br>
+
+<span style="color: red;">(i) x and y have a linear relationship?</span>
+The black-colored regression line in the residual's vs. fitted plot appears to be a good fit for the data, displaying the residuals as randomly scattered around the zero line, devoid of any apparent structure or systematic pattern such as significant curvatures or heteroscedasticity. The plot's distribution suggests that the variance of the residuals does not systematically increase or decrease, which indicates homoscedasticity. Therefore, we can assume a linear relationship between x and y.
+
+<span style="color: red;">(ii) The variance of the residuals (errors) remains constant across all levels of the independent variable?</span>
+
+The plot of residuals vs. fitted values allows us to confirm the assumptions made in the first plot. The residuals in this case seem to distribute evenly across the fitted values. There is no visible funneling or change in spread, indicating that the assumption of constant variance holds, implying homoscedasticity.
+
+## Question 4
+Using the same dataset as in Problem 3, fit the regression line and use the plot(model) function to generate the four diagnostic plots. What can you infer about the distribution of the residuals from the QQ plot? Additionally, we can also assess the distribution by creating a histogram of the residuals. Follow the code below to do this and see what you can conclude from the histogram plot.
+
+
+```{r}
+#Load necessary library
+library(ggplot2)
+
+#Read the data from csv file
+data <- read.csv("HW7-data-1.csv")
+
+#Fit a linear model 
+model1<-lm(y~x,data=data)
+plot(model1)
+
+#Calculate fitted values and residuals
+data$fitted <-fitted(model1)
+data$residuals <-resid(model1)
+
+#Plot histogram of residuals
+ggplot(data,aes(x=residuals))+
+  geom_histogram(binwidth=1,fill="blue",color="black",alpha=0.7)+
+  labs(title="Histogram of Residuals",
+       x="Residuals",
+       y="Frecuency")+
+  theme_minimal()
+
+```
+
+<b>What can you infer about the distribution of the residuals from the QQ plot?</b><br>
+<b>Q-Q Plot</b><br>
+The Q-Q plot objective is to check whether the residuals follow a normal distribution. In this plot, the residuals mostly follow the straight line, which suggests a normal distribution. However, there are some deviations at the tails points 74, 49, and 64, which might indicate some outliers or non-normality at the extreme values, but with the overall data trend, it is reasonable to keep holding the assumption of normality.<br><br>
+
+<b>Other plot analysis:</b><br>
+<br>
+<b>Residuals vs. Fitted Plot</b><br>
+The objective of this plot is to check for non-linearity and heteroscedasticity. We are looking for residuals randomly scattered around the horizontal zero line with no pattern.
+The plot displays a fairly scattered distribution of residuals around the zero line, with a few outlier points (74, 49, and 64) exhibiting greater distance from the others. Additionally, there is a slight curvature in the red line, which may indicate a small amount of non-linearity. However, the general pattern suggests that the model fits reasonably well as a linear regression.<br><br>
+
+<b>Scale-Location Plot</b><br>
+This plot checks for homoscedasticity, which refers to whether the residuals have a constant variance across all fitted values. We are looking for a flat red line, and the points should be evenly spread along it.
+In this problem, the plot shows a relatively flat red line, but some points are more spread out at certain ranges: points 74, 49, and 64. This suggests that the variance is mostly constant, with a few deviations that might indicate minor heteroscedasticity. Overall, the model seems to have reasonable homoscedasticity.<br><br>
+
+<b>Residuals vs. leverage plot</b><br>
+This plot objective is to identify influential points with high leverage and large residuals that can have an undue influence on the model.
+The plot shows a few points—74, 49, and 64—that are more distant from the rest, suggesting they might have some influence on the model. However, none of the points appear to have excessively high leverage, and none of them are beyond the Cook’s distance threshold, so their influence is not critical.
+
+<b>Histogram of residuals plot</b><br>
+The objective of this plot is to visually assess the distribution of residuals.The plot depicts a nearly bell-shaped distribution of residuals. This implies a normal distribution of residuals, yet a few deviations in the tails are evident, and the curve primarily is left-skewed.
+<br>
+
+## Question 5
+Please apply the same analysis you performed in Problem 4 to the new dataset, HW7-data-2.csv. Afterward, discuss the distribution of the residuals.
+```{r}
+#Load necessary library
+library(ggplot2)
+
+#Read the data from csv file
+data <- read.csv("HW7-data-2.csv")
+
+#Fit a linear model 
+model2<-lm(y~x,data=data)
+plot(model2)
+
+#Calculate fitted values and residuals
+data$fitted <-fitted(model2)
+data$residuals <-resid(model2)
+
+#Plot histogram of residuals
+ggplot(data,aes(x=residuals))+
+  geom_histogram(binwidth=1,fill="blue",color="black",alpha=0.7)+
+  labs(title="Histogram of Residuals",
+       x="Residuals",
+       y="Frecuency")+
+  theme_minimal()
+
+```
+<br>
+Do the residuals appear to follow a normal distribution?<br>
+
+<b>Q-Q Plot</b><br>
+In this plot, the residuals follow the straight line well, but there are deviations at the extremes. The residuals deviate from the line at points 4, 93, and 26, indicating a deviation from perfect normality, especially in the tails. However, the overall pattern suggests that the residuals are mostly normal, with only minor deviations.
+
+<b>Histogram of residuals plot</b><br>
+The histogram shows a fairly symmetric, nearly bell-shaped distribution of residuals, though it is slightly left-skewed. The majority of the residuals center around zero, with a few outliers present. This confirms that the residuals follow a near-normal distribution, with some deviations in the tails, which aligns with the analysis from the Q-Q plot.
+
+<br>
+Overall, the residuals follow a near-normal distribution with some deviations in the tails, especially for a few outlier points (4, 26, and 93). While the residuals are not absolutely normal, the deviations are small, and the residual normality assumption seems reasonable for this model.
+<br>
+
+<b>Other plot analysis:</b><br>
+<br>
+<b>Residuals vs. Fitted Plot</b><br>
+In this plot, the residuals evenly scatter around the zero line, with a few outlier points like 4, 93, and 26. The red line shows a slight curvature, indicating some potential nonlinearity in the model. However, the general scatter of residuals suggests that the linear model is a reasonable fit. The outliers may need further investigation.
+
+<b>Scale-Location Plot</b><br>
+The scale-location plot shows a relatively flat red line, indicating that the variance is mostly constant across fitted values. There are some deviations, especially with points 4, 93, and 26, but these are not extreme enough to suggest severe heteroscedasticity. Overall, the assumption of homoscedasticity seems reasonable, though minor variations in residual variance exist.
+
+<b>Residuals vs. leverage plot</b><br>
+In this plot, points 93 and 260 are more distant from the others, suggesting they may be somewhat influential. However, none of the points exceed the Cook's distance threshold, indicating that their influence is not excessive. These points may still warrant closer examination to ensure they are not unduly impacting the model.
+
+
+

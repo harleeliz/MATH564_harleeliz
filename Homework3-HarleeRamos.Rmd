@@ -1,0 +1,67 @@
+---
+title: "Homework N°3"
+author: "Harlee Ramos"
+date: "2024-09-20"
+output: html_document
+---
+## *This R Markdown HTML file contains question 3 and question 4 of the homework.
+
+## Question 3
+For this exercise a CSV document was created with a simulated data set with 1000 data points, the file is named as simulated_data.csv. Then the following code is performing the following tasks: <br>
+(a) Create an R Markdown document and load the CSV file simulated data.csv. <br>
+(b) Set up a least squares regression model using the lm() function. <br>
+(c) Use the summary function to display the results of the regression model. <br>
+(d) Plot the data using the plot() function. <br>
+(e) Add the least squares regression line to the plot using the abline() function. <br>
+
+```{r}
+df<-read.csv("simulated_data.csv",header=TRUE, sep=",")
+x<-df$x
+y<-df$y
+
+
+model1<-lm(y ~ x)
+options(digits = 9)
+summary(model1)
+plot(x,y)
+abline(model1)
+
+```
+
+## Question 4
+For this exercise a CSV document was created with a simulated data set with 1000 data points, the file is named as simulated_data_nonconstant_variance.csv. Then the following code is performing the following tasks: <br>
+(a) Create an R Markdown document and load the CSV file simulated_data_nonconstant_variance.csv. <br>
+(b) Set up a least squares regression model using the lm() function. <br>
+(c) Use the summary function to display the results of the regression model. <br>
+(d) Plot the data using the plot() function. <br>
+(e) Add the least squares regression line to the plot using the abline() function. <br>
+
+```{r}
+df<-read.csv("simulated_data_nonconstant_variance.csv",header=TRUE, sep=",")
+x<-df$x
+y<-df$y
+
+
+model1<-lm(y ~ x)
+options(digits = 9)
+summary(model1)
+plot(x,y)
+abline(model1)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+## Plot analysis
+
+Plot Question 3. The plot illustrates the distribution of the generated data along the line, revealing a positive direction and increasing inclination for both the line and the data. Then there is a clear linear relationship between the variables x and y. Also, the distance from the data points to the line is similar, indicating that each data point's residual variance is similar. Next, we can infer a strong and positive correlation between x and y. Finally, the R-squared value of 0.9926 supports this claim, indicating that the x variable can account for 99.26% of the variation in the y variable.
+
+
+Plot Question 4. The plot also depicts a regression line; however, in this case, we can clearly see that the data points became more scattered on the y axis as the x-variable increased. It also appears that the distances between the line and each data point vary more than in question 3. The situation in plot 4 indicates heteroscedasticity, which stands for non-constant variance of errors. In summary, the R-squared value of 0.1576 indicates that the x variable accounts for 15.76% of the y variable's variation. <br> <br> 
+However, the difference between 0.1576 and 0.9926 indicates a significantly weaker linear relationship between x and y compared to the plot from Question 3. (Note that this final comment is subject-related, so it depends on the features and our research intentions.)
+
+## In summary <br> 
+In question 3 plot's, the data fits the linear model well, with a strong linear relationship and stable residual variance. This shows that the model provides a good fit for the data. However, the data in question 4 Plot does not match the linear model as well. The residuals rise with x, suggesting that heteroscedasticity makes the linear model unfit for this data set.
+

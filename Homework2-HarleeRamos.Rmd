@@ -1,0 +1,89 @@
+---
+title: "Homework N°2"
+author: "Harlee Ramos"
+date: "2024-09-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Question 2
+We are revisiting Question 3 from homework 1, but this time using R and presenting the results with R Markdown.
+To start, we are creating a specific data frame
+
+
+```{r}
+x<- c(1,2,4,6,7,8,10)
+y<- c(10,14,12,13,15,12,13)
+
+#Combine vectors into data frame
+df<- data.frame(x=x, y=y)
+
+#Print the data frama
+print(df)
+
+```
+
+## Question 4
+
+Apply the knowledge from question3 to compute the following using R:
+(i) Sxx, Sxy and Syy
+```{r}
+# Manual computing
+Sxx=sum(x*x)-length(x)*mean(x)^2
+Sxy=sum(x*y)-length(x)*mean(x)*mean(y)
+Syy=sum(y*y)-length(x)*mean(y)^2
+
+beta1hat=Sxy/Sxx
+betaOhat=mean(y)-beta1hat*mean(x)
+
+#Print betaOhat and beta1hat
+print(paste("betaOhat = ",betaOhat))
+print(paste("beta1hat = ",beta1hat))
+
+#abline(a,b) adds a line with y-intercept as a and slope as b
+plot(x,y)
+abline(betaOhat,beta1hat)
+```
+
+
+## Question 5
+```{r}
+df<-read.csv("Advertising.csv",header=TRUE, sep=",")
+x1<-df$TV
+x2<-df$radio
+x3<-df$newspaper
+y<-df$sales
+
+
+model1<-lm(y ~ x1)
+options(digits = 9)
+summary(model1)
+plot(x1,y)
+abline(model1)
+
+model2<-lm(y ~ x2)
+options(digits = 9)
+summary(model2)
+plot(x2,y)
+abline(model2)
+
+
+model3<-lm(y~x3)
+summary(model3)
+plot(x3,y)
+abline(model3)
+
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
